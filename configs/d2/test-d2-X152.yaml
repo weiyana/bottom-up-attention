@@ -1,5 +1,5 @@
 MODEL:
-  WEIGHTS: "bua-d2-frcn-x152.pth"
+  WEIGHTS: "pretrained_weights/bua-d2-frcn-x152.pth"
   META_ARCHITECTURE: "GeneralizedRCNN"
   ATTRIBUTE_ON: True
   BUA:
@@ -7,7 +7,7 @@ MODEL:
     EXTRACTOR:
       MODE: 1
       MIN_BOXES: 10
-      MAX_BOXES: 20
+      MAX_BOXES: 100
       CONF_THRESH: 0.4
   RESNETS:
     STRIDE_IN_1X1: False  # this is a C2 model

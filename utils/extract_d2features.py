@@ -9,7 +9,7 @@ import argparse
 import os
 import sys
 import torch
-# import tqdm
+from tqdm import tqdm
 import cv2
 import numpy as np
 
@@ -199,6 +199,7 @@ def model_inference(model, batched_inputs, extract_mode, dump_folder, image_h, i
     
     cls_probs = F.softmax(predictions[0], dim=-1)
     cls_probs = cls_probs[:, :-1]  # background is last
+
     if extract_mode != 3:
         predictions, r_indices = model.roi_heads.box_predictor.inference(predictions, proposals)
 
@@ -324,6 +325,7 @@ def extract_feat(split_idx, img_list, cfg, args, actor: ActorHandle):
         # if os.path.exists(os.path.join(special_output_dir, im_file.split('.')[0]+'.npz')):
         #     actor.update.remote(1)
         #     continue
+        
         image_id = im_file.split('.')[0] # xxx.jpg
         dump_folder = os.path.join(args.output_dir, str(image_id) + ".npz")
         if os.path.exists(os.path.join(args.output_dir, im_file.split('.')[0]+'.npz')):
@@ -334,6 +336,7 @@ def extract_feat(split_idx, img_list, cfg, args, actor: ActorHandle):
         # if not start:
         #     actor.update.remote(1)
         #     continue
+        
         im = cv2.imread(os.path.join(args.image_dir, im_file))
         illegal = False
         if im is None:
