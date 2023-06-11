@@ -5,7 +5,9 @@ TridentNet Training Script.
 This script is a simplified version of the training script in detectron2/tools.
 """
 
+import datetime
 import os
+from pathlib import Path
 import sys
 import time
 sys.path.append('detectron2')
@@ -95,7 +97,11 @@ def setup(args):
 
 def main(args):
     cfg = setup(args)
-
+    # key position
+    # output_dir=cfg.OUTPUT_DIR+"-"+datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    # Path(output_dir).mkdir(parents=True, exist_ok=True)
+    # output_dir = Path(output_dir)
+    # cfg.OUTPUT_DIR=output_dir
     if args.eval_only:
         model = Trainer.build_model(cfg)
         DetectionCheckpointer(model, save_dir=cfg.OUTPUT_DIR).resume_or_load(

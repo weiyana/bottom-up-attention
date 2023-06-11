@@ -171,7 +171,8 @@ class AttributeRes5ROIHeads(AttributeROIHeads, Res5ROIHeads):
 
     def forward(self, images, features, proposals, targets=None):
         del images
-
+        # key position
+        import ipdb;ipdb.set_trace()
         if self.training:
             assert targets
             proposals = self.label_and_sample_proposals(proposals, targets)
@@ -214,6 +215,7 @@ class AttributeRes5ROIHeads(AttributeROIHeads, Res5ROIHeads):
                 raise ValueError('BUA.EXTRATOR.MODE ERROR')
         else:
             pred_instances, _ = self.box_predictor.inference(predictions, proposals)
+            import ipdb;ipdb.set_trace()
             pred_instances = self.forward_with_given_boxes(features, pred_instances)
             return pred_instances, {}
 

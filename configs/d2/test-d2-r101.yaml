@@ -1,6 +1,7 @@
 _BASE_: "base-d2.yaml"
 MODEL:
-  WEIGHTS: "bua-d2-frcn-r101.pth"
+  # WEIGHTS: "bua-d2-frcn-r101.pth"
+  WEIGHTS: "outputs-test/model_0159999.pth"
   BUA:
     ATTRIBUTE_ON: True
     EXTRACTOR:
