@@ -17,7 +17,8 @@ from detectron2.evaluation.evaluator import DatasetEvaluator
 from detectron2.data.datasets.coco import convert_to_coco_json
 from detectron2.evaluation.coco_evaluation import instances_to_coco_json
 
-from .vg_eval import vg_eval
+from .vg_eval import vg_eval, vg_eval_cls_agnostic
+logger = logging.getLogger(__name__)
 
 class VGEvaluator(DatasetEvaluator):
     """
@@ -89,6 +90,7 @@ class VGEvaluator(DatasetEvaluator):
                 count += 1
 
         self.roidb, self.image_index = self.gt_roidb(self._coco_api)
+        self.eval_mode = 'normal' # cls_agnostic
 
     def _tasks_from_config(self, cfg):
         """
@@ -194,7 +196,6 @@ class VGEvaluator(DatasetEvaluator):
         #     pred['lables'] = labels
         #     pred['bbox'] = bbox
         #     preds.append(pred)
-
         for cls_ind, cls in enumerate(self._classes):
             if cls == '__background__':
                 continue
@@ -214,6 +215,8 @@ class VGEvaluator(DatasetEvaluator):
                                 format(str(item["image_id"]), scores[k],
                                        dets[k, 0] + 1, dets[k, 1] + 1,
                                        dets[k, 2] + 1, dets[k, 3] + 1))
+            if self.eval_mode=='cls_agnostic':
+                break
 
     def get_vg_results_file_template(self, output_dir, pickle=True, eval_attributes = False):
         filename = 'detections_vg'+'_{:s}.txt'
@@ -235,6 +238,16 @@ class VGEvaluator(DatasetEvaluator):
             classes = self._attributes
         else:
             classes = self._classes
+
+        if self.eval_mode=='cls_agnostic':
+            filename = self.get_vg_results_file_template(output_dir).format(classes[1])
+            rec, prec, ap, scores, npos = vg_eval_cls_agnostic(
+                filename, self.roidb, self.image_index, 1, ovthresh=0.5,
+                use_07_metric=use_07_metric, eval_attributes=eval_attributes)
+            all_box_recall=rec[-1]
+            logger.info('All Boxes Recall = {:.4f}'.format(all_box_recall))
+            return
+
         for i, cls in enumerate(classes):
             if cls == '__background__' or cls == '__no_attribute__':
                 continue

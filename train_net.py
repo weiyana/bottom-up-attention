@@ -31,6 +31,7 @@ class Trainer(DefaultTrainer):
         super().__init__(cfg)
         self.rpn_box_lw = cfg.MODEL.RPN.BBOX_LOSS_WEIGHT
         self.rcnn_box_lw = cfg.MODEL.ROI_BOX_HEAD.BBOX_LOSS_WEIGHT
+        self.cfg = cfg
 
     @classmethod
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
@@ -58,7 +59,7 @@ class Trainer(DefaultTrainer):
         else:
             raise Exception("detectron mode note supported: {}".format(args.model))
 
-    def run_step(self):
+    def run_step(self, iter):
         """
         !!Hack!! for the run_step method in SimpleTrainer to adjust the loss
         """
@@ -80,6 +81,11 @@ class Trainer(DefaultTrainer):
         self.optimizer.zero_grad()
         losses.backward()
         self.optimizer.step()
+
+        if (iter+1)%5000==0 or iter==0:
+            self.model.eval()
+            self.test(self.cfg, self.model)
+            self.model.train()
 
 def setup(args):
     """
